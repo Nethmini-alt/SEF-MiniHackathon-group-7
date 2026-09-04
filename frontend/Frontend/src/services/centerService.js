@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 // Base URL for the API - adjust if your backend runs on a different port
-const API_BASE_URL = 'https://localhost:7115/api'; // Change to your API URL
-// Or use: const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:5184/api';
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -21,8 +20,17 @@ apiClient.interceptors.response.use(
             // Server responded with an error status
             const message = error.response.data?.message || 
                            error.response.data?.title || 
+                           error.response.data?.errors || 
                            'An error occurred';
-            error.message = message;
+            
+            // Handle validation errors
+            if (error.response.status === 400 && error.response.data?.errors) {
+                const validationErrors = error.response.data.errors;
+                const firstError = Object.values(validationErrors)[0];
+                error.message = Array.isArray(firstError) ? firstError[0] : 'Validation error';
+            } else {
+                error.message = typeof message === 'string' ? message : 'An error occurred';
+            }
         } else if (error.request) {
             // Request was made but no response received
             error.message = 'Unable to connect to the server. Please check your connection.';
@@ -44,7 +52,7 @@ const centerService = {
      */
     async getCenters() {
         try {
-            const response = await apiClient.get('/centers');
+            const response = await apiClient.get('/Centers');
             return response.data;
         } catch (error) {
             console.error('Error fetching centers:', error);
@@ -59,7 +67,7 @@ const centerService = {
      */
     async getCenterById(id) {
         try {
-            const response = await apiClient.get(`/centers/${id}`);
+            const response = await apiClient.get(`/Centers/${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching center ${id}:`, error);
@@ -74,7 +82,7 @@ const centerService = {
      */
     async createCenter(centerData) {
         try {
-            const response = await apiClient.post('/centers', centerData);
+            const response = await apiClient.post('/Centers', centerData);
             return response.data;
         } catch (error) {
             console.error('Error creating center:', error);
@@ -90,7 +98,7 @@ const centerService = {
      */
     async updateCenter(id, centerData) {
         try {
-            const response = await apiClient.put(`/centers/${id}`, centerData);
+            const response = await apiClient.put(`/Centers/${id}`, centerData);
             return response.data;
         } catch (error) {
             console.error(`Error updating center ${id}:`, error);
@@ -105,7 +113,7 @@ const centerService = {
      */
     async deleteCenter(id) {
         try {
-            await apiClient.delete(`/centers/${id}`);
+            await apiClient.delete(`/Centers/${id}`);
         } catch (error) {
             console.error(`Error deleting center ${id}:`, error);
             throw error;

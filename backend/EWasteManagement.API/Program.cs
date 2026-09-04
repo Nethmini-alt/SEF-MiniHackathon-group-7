@@ -2,6 +2,8 @@ using EWasteManagement.API.Data;
 using EWasteManagement.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using EWasteManagement.API.SeedData;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,5 +79,7 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.EnsureCreated();
 }
+
+ await DbSeeder.SeedAsync(app.Services);
 
 app.Run();
