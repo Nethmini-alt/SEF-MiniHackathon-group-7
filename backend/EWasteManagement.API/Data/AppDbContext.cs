@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using EWasteManagement.API.Models;
+
 
 namespace EWasteManagement.API.Data;
 
@@ -10,7 +10,7 @@ public class AppDbContext : DbContext
     {
     }
 
-    public DbSet<Center> Centers { get; set; }
+    
 
     public DbSet<PickupRequest> PickupRequests { get; set; }
 
