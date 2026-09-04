@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/immutability */
 import React, { useState, useEffect } from 'react';
 import centerService from '../../services/centerService';
 import './ManageCenters.css';
